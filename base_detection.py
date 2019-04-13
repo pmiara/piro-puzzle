@@ -1,9 +1,12 @@
-import math
 from itertools import combinations
 from skimage.draw import line
 from collections import defaultdict
 
+from contour import calc_angle
 from parameters import *
+
+# TODO: sprawdź jak daleko są od siebie wierzchołki podstaw.
+# Jeśli za blisko (mniej niż połowa wszystkich punktów), to odrzuć.
 
 
 def get_base(contour):
@@ -18,11 +21,6 @@ def get_base(contour):
 
 def calc_right_angle_score(a, b, c):
     return abs(90 - calc_angle(a, b, c))
-
-
-def calc_angle(a, b, c):
-    ang = math.degrees(math.atan2(c[1]-b[1], c[0]-b[0]) - math.atan2(a[1]-b[1], a[0]-b[0]))
-    return ang + 360 if ang < 0 else ang
 
 
 def score_vertices(contour):
