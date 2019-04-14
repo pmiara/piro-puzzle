@@ -10,9 +10,6 @@ from parameters import *
 
 
 def get_base(contour):
-    """
-    The most important function in this file. Returns figure's base.
-    """
     vertex_scores = score_vertices(contour)
     best_vertices = choose_best_vertices(vertex_scores)
     base_a, base_b = find_best_base_pair(contour, best_vertices)
