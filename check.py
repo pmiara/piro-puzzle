@@ -21,62 +21,69 @@ def run(popenargs):
         retcode = process.poll()
         return output.decode("utf-8").splitlines()
 
+
 def checkDir(commanddir, path, N):
-    with open(os.path.join(path, 'correct.txt'), 'rt') as f:
+    with open(os.path.join(path, "correct.txt"), "rt") as f:
         correct = f.read().splitlines()
-    
-    cmd = ['./run.sh', path, str(N)]
+
+    cmd = ["./run.sh", path, str(N)]
     cwd = os.getcwd()
     os.chdir(commanddir)
     start = time.time()
     output = run(cmd)
     stop = time.time()
     os.chdir(cwd)
-    
+
     size = 6
     result = np.zeros(size)
-    
+
     if len(output) != len(correct):
-        return result, stop-start;
-    
+        return result, stop - start
+
     for line, c in zip(output, correct):
         line = line.split()
         try:
             idx = line.index(c)
         except:
             idx = N - 1
-        if idx < size-1:
+        if idx < size - 1:
             result[idx] += 1
         result[-1] += 1.0 / (1.0 + idx)
-    
-    return result, stop-start;
+
+    return result, stop - start
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print(os.path.basename(sys.argv[0]) + " <katalog_z_programem_run.sh> <sciezka_do_katalogu_ze_zbiorami_danych>")
+        print(
+            os.path.basename(sys.argv[0])
+            + " <katalog_z_programem_run.sh> <sciezka_do_katalogu_ze_zbiorami_danych>"
+        )
         exit(1)
-    
+
     programdir_path = os.path.abspath(sys.argv[1])
     data_path = os.path.abspath(sys.argv[2])
-    
+
     print("AUTORZY:")
-    with open(os.path.join(programdir_path, 'autorzy.txt'), 'rt') as f:
+    with open(os.path.join(programdir_path, "autorzy.txt"), "rt") as f:
         for l in f.readlines():
             print(l.strip())
-    
-    program_path = os.path.join(programdir_path, 'run.sh')
-    os.chmod(program_path, os.stat(program_path).st_mode | 0o100)#stat.S_IEXEC)
-    
-    dirs = [('set0', 6),
-            ('set1', 20),
-            ('set2', 20),
-            ('set3', 20),
-            ('set4', 20),
-            ('set5', 200),
-            ('set6', 200),
-            ('set7', 20),
-            ('set8', 100)]
-    
+
+    program_path = os.path.join(programdir_path, "run.sh")
+    os.chmod(program_path, os.stat(program_path).st_mode | 0o100)  # stat.S_IEXEC)
+
+    dirs = [
+        ("set0", 6),
+        ("set1", 20),
+        ("set2", 20),
+        ("set3", 20),
+        ("set4", 20),
+        ("set5", 200),
+        ("set6", 200),
+        ("set7", 20),
+        ("set8", 100),
+    ]
+
     print("WYNIKI:")
     total = []
     times = []
@@ -84,8 +91,26 @@ if __name__ == "__main__":
         res, t = checkDir(programdir_path, os.path.join(data_path, d[0]), d[1])
         total.append(res)
         times.append(t)
-        print(d[0],'=', res[:-1], 'score =', res[-1], "[%dsec]" % t)
-    
+        print(
+            "{name} = {scores}, score = {score:.4f} / {total}, score% = {score_proc:.4f} [{time:.2f}sec]".format(
+                name=d[0],
+                scores=res[:-1],
+                score=res[-1],
+                total=d[1],
+                score_proc=res[-1] / d[1],
+                time=t,
+            )
+        )
+
     print("----")
     summary = np.array(total).sum(axis=0)
-    print(summary[:-1], 'score =', summary[-1], "[%dsec]" % sum(times))
+    total_sum = sum([d[1] for d in dirs])
+    print(
+        "{scores}, score = {score:.4f} / {total}, score% = {score_proc:.4f} [{time:.2f}sec]".format(
+            scores=summary[:-1],
+            score=summary[-1],
+            total=total_sum,
+            score_proc=summary[-1] / total_sum,
+            time=sum(times),
+        )
+    )
