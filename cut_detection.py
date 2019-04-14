@@ -3,14 +3,15 @@ from parameters import *
 
 
 def get_cut(contour, base_a, base_b):
-    if base_a > base_b:
-        base_a, base_b = base_b, base_a
     if cycle_dist(len(contour), base_a, base_b) == abs(base_a - base_b):
         step_a = -1 * CUT_DETECTION_DELTA
         step_b = CUT_DETECTION_DELTA
     else:
         step_a = CUT_DETECTION_DELTA
         step_b = -1 * CUT_DETECTION_DELTA
+    if base_a > base_b:
+        step_a *= -1
+        step_b *= -1
     return (
         get_cut_start(contour, base_a, step_a),
         get_cut_start(contour, base_b, step_b),

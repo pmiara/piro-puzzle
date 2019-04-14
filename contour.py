@@ -7,8 +7,7 @@ from parameters import CONTOUR_THRESHOLD
 
 def get_contour(img):
     contours = measure.find_contours(img, CONTOUR_THRESHOLD)
-    contour = max(contours, key=lambda arr: len(arr))
-    return np.rint(contour).astype("int")
+    return max(contours, key=lambda arr: len(arr))
 
 
 def cycle_dist(cycle_max, a, b):
@@ -20,3 +19,7 @@ def calc_angle(a, b, c):
         math.atan2(c[1] - b[1], c[0] - b[0]) - math.atan2(a[1] - b[1], a[0] - b[0])
     )
     return ang + 360 if ang < 0 else ang
+
+
+def contour_to_int_array(contour):
+    return np.rint(contour).astype("int")

@@ -2,7 +2,7 @@ from itertools import combinations
 from skimage.draw import line
 from collections import defaultdict
 
-from contour import calc_angle
+from contour import calc_angle, contour_to_int_array
 from parameters import *
 
 # TODO: sprawdź jak daleko są od siebie wierzchołki podstaw.
@@ -52,10 +52,11 @@ def score_vertex_pair(contour_set, point_a, point_b):
 
 
 def find_best_base_pair(contour, best_vertices):
-    contour_set = {(y, x) for y, x in contour}
+    contour_int = contour_to_int_array(contour)
+    contour_set = {(y, x) for y, x in contour_int}
     best_score = 0
     for a, b in combinations(best_vertices, 2):
-        score = score_vertex_pair(contour_set, contour[a], contour[b])
+        score = score_vertex_pair(contour_set, contour_int[a], contour_int[b])
         if score > best_score:
             best_score = score
             base_a, base_b = a, b
